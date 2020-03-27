@@ -11,6 +11,15 @@ EOF
   metric_descriptor {
     metric_kind = "DELTA"
     value_type  = "INT64"
+
+    labels {
+      key = "name"
+      value_type = "STRING"
+    }
+  }
+
+  label_extractors = {
+    "name" = "EXTRACT(protoPayload.request.metadata.name)"
   }
 }
 
@@ -30,6 +39,8 @@ resource "google_monitoring_alert_policy" "webhook_creation" {
         alignment_period     = "300s"
         cross_series_reducer = "REDUCE_SUM"
         per_series_aligner   = "ALIGN_SUM"
+
+        group_by_fields = ["metric.label.name"]
       }
 
       trigger {
